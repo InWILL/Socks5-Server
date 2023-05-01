@@ -294,12 +294,11 @@ void HandleAccept(SOCKET client)
 		goto ExitThread;
 	}
 
-	FD_ZERO(&readfds);
-	FD_SET(client, &readfds);
-	FD_SET(relay, &readfds);
-
 	while (1)
 	{
+		FD_ZERO(&readfds);
+		FD_SET(client, &readfds);
+		FD_SET(relay, &readfds);
 		if (select(NULL, &readfds, NULL, NULL, NULL) > 0)
 		{
 			if (FD_ISSET(client, &readfds))
@@ -311,7 +310,7 @@ void HandleAccept(SOCKET client)
 					goto ExitThread;
 				}
 				int sendSize = send(relay, buffer, recvSize, NULL);
-				printf("[+] client->relay sendSize: %i\n", sendSize);
+				printf("[+] client->relay sendSize: %d\n", sendSize);
 			}
 			if (FD_ISSET(relay, &readfds))
 			{
@@ -322,11 +321,8 @@ void HandleAccept(SOCKET client)
 					goto ExitThread;
 				}
 				int sendSize = send(client, buffer, recvSize, NULL);
-				printf("[+] relay->client sendSize: %i\n", sendSize);
+				printf("[+] relay->client sendSize: %d\n", sendSize);
 			}
-			FD_ZERO(&readfds);
-			FD_SET(client, &readfds);
-			FD_SET(relay, &readfds);
 		}
 		else
 		{
